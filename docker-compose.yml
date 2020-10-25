@@ -1,0 +1,33 @@
+version: "2.0"
+
+services:
+  maven:
+    build: mvn
+    env_file:
+     - .env
+    volumes:
+      - data_files:/var/lib/maven/app
+
+  tomcat:
+    build: tomcat
+    depends_on:
+      - maven
+    ports:
+      - "80:8080"
+    volumes:
+      - data_files:/usr/local/tomcat/webapps
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASS}"
+      MYSQL_DATABASE: "${MYSQL_DB}"
+
+volumes:
+  data_files:
+  mysql_data:
